@@ -1,2 +1,21 @@
 # Ryan pandora tutorial
 # https://gist.github.com/CrossR/2c2231fac2fc28d9082db111dcc3cec1
+
+
+# 1. Error
+python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector --larsoft_libtorch
+
+# the flag --larsoft_libtorch doesn't appear in pandora_build.py
+grep "larsoft_libtorch" pandora_build.py
+# nothing
+
+# "workaround":
+python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector 
+
+# this failed, after taking maybe an hour
+python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector --build_libtorch
+
+# did not pipe output to a log, but the end of the attempted build has:
+[3802/5966] Building CXX object third_party...emm_avx2.dir/src/FbgemmI8DepthwiseAvx2.cc.
+ninja: build stopped: subcommand failed.
+2026-02-12 05:40:47 : ERR   : Failed to build LibTorch: Command 'cmake --build /exp/dune/app/users/lasquith/git/nd_pandora/libtorch-build --target install' returned non-zero exit status 1.
