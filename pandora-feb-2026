@@ -2,20 +2,79 @@
 # https://gist.github.com/CrossR/2c2231fac2fc28d9082db111dcc3cec1
 
 
-# 1. Error
+#### 1. Error ###
 python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector --larsoft_libtorch
 
-# the flag --larsoft_libtorch doesn't appear in pandora_build.py
-grep "larsoft_libtorch" pandora_build.py
-# nothing
+# ===== FIX FROM RYAN ==== #
+wget https://gist.githubusercontent.com/CrossR/2c2231fac2fc28d9082db111dcc3cec1/raw/9a1e58ccfbb3919c55474c238a8b4d8928749c21/pandora_build.py
 
-# "workaround":
-python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector 
+### typo PandoraInterface not aliased, replace
+PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
+# with
+./LArRecoND/build/PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
 
-# this failed, after taking maybe an hour
-python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector --build_libtorch
 
-# did not pipe output to a log, but the end of the attempted build has:
-[3802/5966] Building CXX object third_party...emm_avx2.dir/src/FbgemmI8DepthwiseAvx2.cc.
-ninja: build stopped: subcommand failed.
-2026-02-12 05:40:47 : ERR   : Failed to build LibTorch: Command 'cmake --build /exp/dune/app/users/lasquith/git/nd_pandora/libtorch-build --target install' returned non-zero exit status 1.
+# === HANGS ON Select best slice hypotheses - SEE DEETS [A]
+
+# What's happening:
+
+# required flags:
+# -r "AllHitsSliceNu"      [Full, AllHitsCR, AllHitsNu, CRRemHitsSliceCR, CRRemHitsSliceNu, AllHitsSliceCR, AllHitsSliceNu]
+# what is CRRem ? CR?
+# Cosmic Rays!? Cosmic Rays removed?!
+
+
+
+
+#----------------------#
+#     DEETS  [A]       #  
+#----------------------#
+### NON-ERROR (we think!) ERROR: ###
+# this:
+/cvmfs/larsoft.opensciencegrid.org/products/root/v6_28_12/Linux64bit+3.10-2.17-e26-p3915-prof/etc/cling/std.modulemap:277:12: error: header 'optional' not found
+
+# then 
+input_line_1:1:10: note: submodule of top-level module 'std' implicitly imported here
+#include <new>
+         ^
+Warning in cling::IncrementalParser::CheckABICompatibility():
+  Failed to extract C++ standard library version.
+Replaced symbol atexit cannot be found in JIT!
+Replaced symbol at_quick_exit cannot be found in JIT!
+
+# then loads of cling borks, eg:
+IncrementalExecutor::executeFunction: symbol '_ZN5cling7runtime6gClingE' unresolved while linking [cling interface function]!
+
+# then the usual root rubbish about unknown branches 
+
+# then event processing starts, quickly gets to here
+Start event is 0 and end event is 0
+
+   PROCESSING EVENT: 0
+
+Hit list sizes: 2130, 2130, 2106, 2130
+Should run slicing? 1
+There are 1 volumes
+- Volume has 8520 hits
+Running slicing worker instance
+Hit list sizes: 2130, 2130, 2106, 2130
+Making clusters from 2130 3D hits
+Running 3D hit assignment
+Pfo 0x26701c20: created cluster 0x2638af10 with 17 hits
+# blah blah blah
+Identified 1 slice(s)
+Running nu worker instance for slice 1 of 1
+Hit list sizes: 2130, 2130, 2106, 2130
+Making clusters from 2130 3D hits
+Running 3D hit assignment
+Pfo 0x262c7f50: created cluster 0x27239e10 with 57 hits
+# blah blah blah
+Running 3D hit assignment
+Pfo 0x262c7f50: created cluster 0x270f0a60 with 111 hits
+# blah blah blah
+Running 3D hit assignment
+Pfo 0x262c7f50: created cluster 0x274350c0 with 111 hits
+# blah blah blah
+Select best slice hypotheses
+
+# then hang.
