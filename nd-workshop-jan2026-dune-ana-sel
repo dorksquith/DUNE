@@ -1,0 +1,30 @@
+# WORKING SETUP FOR DUNEANASEL
+
+# container
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash --env PS1="(CONTAINER) [\u@\H:\w]$ " -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+# setup
+cd /exp/dune/app/users/${USER}
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+setup cmake v3_22_2
+setup gcc v9_3_0
+setup duneanaobj v03_06_01b -q e20:prof
+
+# get duneanasel
+git clone https://github.com/luketpickering/duneanasel
+
+# build clean, and UPS on
+cd duneanasel
+mkdir build; cd build
+cmake .. -Dduneanasel_USE_UPS_duneanaobj=ON -Dduneanasel_build_examples=ON | tee log_cmake_ups_examples.log
+make install | tee log_install_ups_examples.log
+
+# run
+export testfile=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/run-cafmaker/MicroProdN4p1_NDComplex_FHC.caf.full.spineonly/CAF/0002000/0002500/MicroProdN4p1_NDComplex_FHC.caf.full.spineonly.0002559.CAF.root
+./bin/NDLAr_NumuCCContained_LongestTrack $testfile
+
+# copy root file to laptop. On laptop
+export KRB5CCNAME=FILE:/tmp/krb5cc_`id -u`
+kinit lasquith@FNAL.GOV
+scp lasquith@dunegpvm05.fnal.gov:/exp/dune/app/users/lasquith/duneanasel/build/mutracklen.root .
