@@ -1,6 +1,32 @@
 # Ryan pandora tutorial
 # https://gist.github.com/CrossR/2c2231fac2fc28d9082db111dcc3cec1
 
+# now trying to merge in the larsfot stuff
+
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+setup dunesw "v10_17_01d00" -q "e26:prof"
+setup cmake "v3_27_4"
+setup gcc "v12_1_0"
+setup tbb "v2021_9_0" -q "e26"
+setup root "v6_28_12" -q "e26:p3915:prof"
+
+cd /exp/dune/app/users/${USER}/git/nd_pandora/dev
+mrb newDev -v v10_17_01d00 -q prof:e26
+source /exp/dune/app/users/lasquith/git/nd_pandora/dev/localProducts_larsoft_v10_17_01d00_prof_e26/setup
+cd srcs
+mrb g sbndcode
+cd $MRB_SOURCE/sbndcode
+git checkout uk_larsoft_workshop_2025
+
+
+# lar -c prodsingle_sbnd.fcl -n 5 -o $HOME/data/test.root
+
+
+
+
 
 #### 1. Error ###
 python3 pandora_build.py -o /exp/dune/app/users/${USER}/git/nd_pandora --build_near_detector --larsoft_libtorch
