@@ -1,3 +1,146 @@
+
+# -----------------------------------------
+# SETTING UP VNC  19 Feb
+# ----------------------------------------
+# 1. login to a gpvm and open bash profile
+emacs -nw ~/.bash_profile
+
+# 2. add this at the end of your bash profile
+VNCNUM=40                                                                                                              
+if [[ `hostname` == *"gpvm"* ]]                                                                               
+then
+  export DISPLAY=":$VNCNUM"                                                                                                          
+  if [ `lsof -i -P -n | grep $(expr 5900 + ${VNCNUM}) | wc -l` -eq 0 -o `lsof -i -P -n | grep $(expr 6000 + ${VNCNUM}) | wc -l` -eq 0 ]
+  then
+    echo "vncserver :$VNCNUM not running.  Starting now...."
+    vncserver :$VNCNUM -geometry 2880x1800 -localhost -bs                                           
+  else
+    echo "vncserver :$VNCNUM already running (hopefully owned by you).  Not attempting to start the vncserver..."
+  fi
+fi
+
+# 3. Remove forgotten password
+rm  $HOME/.vnc/passwd
+
+# 4. Exit gpvm
+exit
+
+# 5. Laptop: new terminal window
+emacs -nw ~/.ssh/config
+
+# 6. Add the following at the bottom of config, swapping YOURUSERNAME for your username, eg I have User lasquith
+Host dunegpvm06
+  HostName dunegpvm06.fnal.gov
+  User YOURUSERNAME
+  ForwardAgent yes
+  ForwardX11 yes
+  ForwardX11Trusted yes
+  GSSAPIAuthentication yes
+  GSSAPIDelegateCredentials yes
+  LocalForward 5901 localhost:5940
+
+# 7. On laptop, login to gpvm using specified alias
+
+# do usual kinit
+ssh -Y dunegpvm06
+
+# 8. now it will ask to set a VNC password which must be no more than 8 characters. I said no when it asked me if pwd should be read only
+
+# 9. On gpvm
+
+cd /exp/dune/app/users/${USER}/git/test-vnc
+
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+setup root "v6_28_12" -q "e26:p3915:prof"
+
+export DISPLAY=:40
+
+root -l
+
+TBrowser b
+
+# 10. On laptop: download RealVNC
+https://www.realvnc.com/en/connect/download/viewer/?lai_vid=63x3vVeqpI2Or&lai_sr=5-9&lai_sl=l
+
+# 11. On laptop
+open vnc://localhost:5901
+
+# popup asks for password. Enter the password you set when you logged into gpvm in step #8
+
+---------------------------------------------------------------
+# PANDORA EVDs
+---------------------------------------------------------------
+# kinit as usual
+
+ssh -Y dunegpvm06
+
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+setup dunesw "v10_17_01d00" -q "e26:prof"
+setup cmake "v3_27_4"
+setup gcc "v12_1_0"
+setup tbb "v2021_9_0" -q "e26"
+setup root "v6_28_12" -q "e26:p3915:prof"
+
+# need this AFTER settign up root. Sometimes works, sometimes doesn't. LOL.
+export DISPLAY=:41
+
+cd /exp/dune/app/users/${USER}/git/nd_pandora 
+
+# only once - this is Lily's modded setup
+cp /exp/dune/app/users/lasquith/git/nd_pandora/pandora_setup1.sh pandora_setup.sh
+
+source pandora_setup.sh -n -p /exp/dune/app/users/${USER}/git/nd_pandora
+
+
+# I feel like this is new
+cd /exp/dune/data/users/${USER}/nd_pandora/
+
+# make folders for event displays: these names hardcoded in the modded XML 
+mkdir evds
+mkdir evds_reco
+
+# Lily's modded xml file *CHANGES NEEDED FOR LAUREN*
+cp /exp/dune/app/users/lasquith/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml
+
+# change lasquith to your user name in these two places
+<SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds/ </SaveEventPath>
+<SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds_reco/ </SaveEventPath>
+
+# make a soft link to interface - only needed once
+ln -s /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/build/PandoraInterface PandoraInterface
+
+# run
+./PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
+
+# then on laptop can copy over the evds:
+# new terminal, do kinit, then:
+
+scp lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds_reco/* .
+scp lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds/* .
+
+# but with your username instead of lasquith in four places
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------
+# 12 Feb
+--------------------------------------------------------------------------------------
+
 # Ryan pandora tutorial
 # https://gist.github.com/CrossR/2c2231fac2fc28d9082db111dcc3cec1
 
