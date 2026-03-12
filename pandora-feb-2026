@@ -60,6 +60,20 @@ ls
 ./PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
 
 # LILY ERROR LAUREN DOES NOT HAVE
+#Apptainer> ./PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
+#Using LArTPC projections _and_ 3D hits
+#/cvmfs/larsoft.opensciencegrid.org/products/root/v6_28_12/Linux64bit+3.10-2.17-e26-p3915-prof/etc/cling/std.modulemap:277:12: error: header 'optional' not found
+#    header "optional"
+#           ^
+#input_line_1:1:10: note: submodule of top-level module 'std' implicitly imported here
+##include <new>
+#         ^
+#Warning in cling::IncrementalParser::CheckABICompatibility():
+#  Failed to extract C++ standard library version.
+#Replaced symbol atexit cannot be found in JIT!
+
+# ....
+
 # PandoraMonitoring::InitializeEve(): DISPLAY environment set to :40
 # PandoraMonitoring::InitializeEve(): Caught TEveException: TEveManager::Create window system not initialized.
 # PandoraMonitoring::InitializeEve(): Attempt to release ROOT from batch mode.
