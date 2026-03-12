@@ -1,6 +1,82 @@
 # --------------------------------------------
 # ADDING NEW THINGS TO EVD 12 March
 # --------------------------------------------
+Message from Ryan:
+At this point, maybe a simple thing to change is you can start inserting more event displays as/where you like by editing the Neutrino 
+xml that is linked in your config XML. That will start to show you how say clusters or what not look as everything progresses through.
+
+See:
+https://github.com/PandoraPFA/LArContent/blob/master/larpandoracontent/LArMonitoring/VisualMonitoringAlgorithm.cc
+
+The bottom of that will give you some ideas of what sort of things you can vis (MC, hits, clusters, particles, either the "current" ones, 
+i.e. whatever is being worked on right now, or specific names lists).
+
+---
+So we have
+    <algorithm type = "LArVisualMonitoring">
+        <CaloHitListNames>CaloHitListU CaloHitListV CaloHitListW CaloHitList3D</CaloHitListNames>
+        <ShowDetector>true</ShowDetector>
+        <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds/ </SaveEventPath>
+    </algorithm>
+
+and we tried adding clusters:
+    <algorithm type = "LArVisualMonitoring">
+        <CaloHitListNames>CaloHitListU CaloHitListV CaloHitListW CaloHitList3D</CaloHitListNames>
+        <ClusterListNames>ClustersU ClustersV ClustersW Clusters3D </ClusterListNames>
+        <ShowDetector>true</ShowDetector>
+        <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds/ </SaveEventPath>
+    </algorithm>
+
+This ran fine.
+
+looking at
+    <!-- EVENT DISPLAY 2: RECO -->
+    <algorithm type = "LArVisualMonitoring">
+        <ShowCurrentPfos>true</ShowCurrentPfos>
+        <ShowDetector>true</ShowDetector>
+        <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds_reco/ </SaveEventPath>
+    </algorithm>
+
+So this makes sense in terms of Ryam's suggestion to look at the VisualMonitoringAlgorithm.cc
+
+https://github.com/PandoraPFA/LArContent/blob/09f4ca4332d1d38980c85fd497e51e44dd456c1f/larpandoracontent/LArMonitoring/VisualMonitoringAlgorithm.cc#L23
+
+VisualMonitoringAlgorithm::VisualMonitoringAlgorithm() :
+    m_showCurrentMCParticles(false),
+    m_showCurrentCaloHits(false),
+    m_showCurrentTracks(false),
+    m_showCurrentClusters(false),
+    m_showCurrentPfos(false),
+    m_showCurrentVertices(false),
+    m_displayEvent(true),
+    m_saveEventPath(""),
+    m_showDetector(false),
+    m_detectorView("xz"),
+    m_showOnlyAvailable(false),
+    m_showAssociatedTracks(false),
+    m_hitColors("iterate"),
+    m_thresholdEnergy(-1.f),
+    m_transparencyThresholdE(-1.f),
+    m_energyScaleThresholdE(1.f),
+    m_scalingFactor(1.f),
+    m_showPfoVertices(true),
+    m_showPfoHierarchy(true)
+{
+}
+
+Try this:
+
+    <!-- EVENT DISPLAY 2: RECO -->
+    <algorithm type = "LArVisualMonitoring">
+        <ShowCurrentPfos>true</ShowCurrentPfos>
+        <ShowDetector>true</ShowDetector>
+        <ShowCurrentMCParticles>true</ShowCurrentMCParticles>
+        <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds_reco_12march/ </SaveEventPath>
+    </algorithm>
+
+doesn't seem to have done anything.
+
+
 
 
 
@@ -94,6 +170,7 @@ ls
 scp lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds_reco/* .
 scp lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds/* .
 
+scp -r lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds .
 
 # ----------------------------------------------------------------------------------
 
