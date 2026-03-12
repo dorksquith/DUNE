@@ -1,4 +1,11 @@
 # --------------------------------------------
+# ADDING NEW THINGS TO EVD 12 March
+# --------------------------------------------
+
+
+
+
+# --------------------------------------------
 # FROM THE TOP, 12 March 
 # --------------------------------------------
 # laptop
@@ -56,7 +63,9 @@ ls
 # run
 ./PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
 
-# LILY ERROR LAUREN DOES NOT HAVE
+# LILY ERROR LAUREN DOES NOT HAVE 
+
+# This one fixed by deleting ~/.bash_profile, so it was something in there causing it.
 #Apptainer> ./PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
 #Using LArTPC projections _and_ 3D hits
 #/cvmfs/larsoft.opensciencegrid.org/products/root/v6_28_12/Linux64bit+3.10-2.17-e26-p3915-prof/etc/cling/std.modulemap:277:12: error: header 'optional' not found
@@ -71,6 +80,7 @@ ls
 
 # ....
 
+# This one fixed by having only the VNC set up in bash profile
 # PandoraMonitoring::InitializeEve(): DISPLAY environment set to :40
 # PandoraMonitoring::InitializeEve(): Caught TEveException: TEveManager::Create window system not initialized.
 # PandoraMonitoring::InitializeEve(): Attempt to release ROOT from batch mode.
