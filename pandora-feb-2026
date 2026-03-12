@@ -31,10 +31,13 @@ cd /exp/dune/data/users/${USER}/nd_pandora/
 # mkdir evds
 # mkdir evds_reco
 
-# only once - Lily's modded xml file *CHANGES NEEDED FOR LAUREN*
+# only needed once - Lily's modded xml file 
 # cp /exp/dune/app/users/lasquith/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml
 
-# only once - change lasquith to your user name in these two places
+# edit the xml
+# emacs -nw /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml
+
+# *CHANGES NEEDED FOR LAUREN* only once - change lasquith to your user name in these two places
 # <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds/ </SaveEventPath>
 # <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds_reco/ </SaveEventPath>
 
