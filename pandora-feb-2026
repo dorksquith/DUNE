@@ -1,3 +1,59 @@
+# --------------------------------------------
+# FROM THE TOP, 12 March 
+# --------------------------------------------
+# laptop
+export KRB5CCNAME=FILE:/tmp/krb5cc_`id -u`
+kinit lasquith@FNAL.GOV
+ssh -Y dunegpvm06
+
+# gpvm06
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+# Apptainer
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+setup dunesw "v10_17_01d00" -q "e26:prof"
+setup cmake "v3_27_4"
+setup gcc "v12_1_0"
+setup tbb "v2021_9_0" -q "e26"
+setup root "v6_28_12" -q "e26:p3915:prof"
+
+cd /exp/dune/app/users/${USER}/git/nd_pandora 
+
+# only once - this is Lily's modded setup
+# cp /exp/dune/app/users/lasquith/git/nd_pandora/pandora_setup1.sh pandora_setup.sh
+
+source pandora_setup.sh -n -p /exp/dune/app/users/${USER}/git/nd_pandora
+
+cd /exp/dune/data/users/${USER}/nd_pandora/
+
+# only once - make folders for event displays: these names hardcoded in the modded XML 
+# mkdir evds
+# mkdir evds_reco
+
+# only once - Lily's modded xml file *CHANGES NEEDED FOR LAUREN*
+# cp /exp/dune/app/users/lasquith/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml
+
+# only once - change lasquith to your user name in these two places
+# <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds/ </SaveEventPath>
+# <SaveEventPath> /exp/dune/data/users/lasquith/nd_pandora/evds_reco/ </SaveEventPath>
+
+# only once - make a soft link to interface 
+# ln -s /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/build/PandoraInterface PandoraInterface
+
+# run
+./PandoraInterface -r "AllHitsSliceNu" -i /exp/dune/app/users/${USER}/git/nd_pandora/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml -e 2x2_events.root -g 2x2_geo.root -p -N -n 1
+
+# then on laptop can copy over the evds:
+# new terminal, do kinit, then do the below
+# but with your username instead of lasquith in four places
+
+scp lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds_reco/* .
+scp lasquith@dunegpvm05.fnal.gov:/exp/dune/data/users/lasquith/nd_pandora/evds/* .
+
+
+# ----------------------------------------------------------------------------------
+
 
 # -----------------------------------------
 # SETTING UP VNC  19 Feb
