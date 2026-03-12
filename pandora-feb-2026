@@ -6,9 +6,6 @@ export KRB5CCNAME=FILE:/tmp/krb5cc_`id -u`
 kinit lasquith@FNAL.GOV
 ssh -Y dunegpvm06
 
-# this is printed:
-# New 'dunegpvm06.fnal.gov:40 (lasquith)' desktop is dunegpvm06.fnal.gov:40
-
 # gpvm06
 /cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
 
@@ -21,7 +18,7 @@ setup gcc "v12_1_0"
 setup tbb "v2021_9_0" -q "e26"
 setup root "v6_28_12" -q "e26:p3915:prof"
 
-export DISPLAY=:40
+
 
 cd /exp/dune/app/users/${USER}/git/nd_pandora 
 
