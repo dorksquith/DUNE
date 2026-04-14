@@ -2,6 +2,8 @@
 
 Goal is to provide the process as part of the truth info so we can compare distributions / make sensitivity studies in terms of the different types of Geant processes.
 
+Working with files in /pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/
+
 The Process for a particle describes the process that created it. 
   * https://github.com/NuSoftHEP/nusimdata/blob/main/nusimdata/SimulationBase/MCParticle.h
   * So, we ask the daughters of the Primary what their process is. If we ask a Primary for its process, it will be "Primary".
@@ -35,6 +37,7 @@ Step 1: does this info exist upstream and simply need adding to CAFMaker?
 
 Step 2: is the info available in the edepsim files?
   * I have not yet managed to answer this.
+  * files are eg  MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root
   * Failure : I tried running makeCAF on edepsim, got a seg violation. Hacking that away stopped the truth getting filled so I can't print my TP info.
   * Failure : can't run usual tools like eventdump.fcl because the edepsim files are root files, but apparently not art files
 
