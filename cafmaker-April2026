@@ -156,6 +156,24 @@ python run-validation/edepsim_validation.py -f $fname -d 'full'
 
 python h5-dump.py
 
+# processes are present in the edepsim file.
+# they are enums, a subset of which are defined here:
+# https://github.com/DUNE/edep-sim/blob/master/io/TG4Trajectory.h
+
+# for example 
+traj_id: 109; pdg_id: 1000180400; start_process:4, subprocess:111; end_process:2, subprocess:22;
+
+# start process is set in TG4Trajectory.h
+# kProcessHadronic = 4,
+# start sub process is taken from geant:
+https://apc.u-paris.fr/~franco/g4doxy/html/G4HadronicProcessType_8hh.html
+# fHadronElastic =    111,
+
+# start process is set in TG4Trajectory.h
+# kProcessElectromagetic = 2 
+# end sub process is taken from geant:
+https://apc.u-paris.fr/~franco/g4doxy/html/G4EmProcessSubType_8hh.html
+# fScintillation = 22
 
 
 
