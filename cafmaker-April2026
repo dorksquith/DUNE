@@ -21,6 +21,7 @@ In NOvA I do this like so:
 
 Step 1: does this info exist upstream and simply need adding to CAFMaker?
   * No.
+  * files are in run-mlreco/ (spine)
   * The ndlar reco files don't have full info available for TruthParticles:
   True particle info: 
   track id=2371, 
@@ -42,6 +43,11 @@ Step 2: is the info available in the edepsim files?
   * Failure : can't run usual tools like eventdump.fcl because the edepsim files are root files, but apparently not art files
 
 
+Notes from Alex:
+path=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/
+ * Ask Jacob Larkin for recent config for doing this. Or Gianfranco Ingratta.
+ * Have a look at validation script https://github.com/DUNE/ND_Production/blob/main/run-validation/edepsim_validation.py
+ * The best files to use for checking what is available in edepsim are in <path>/run-convert2h5/
 
 =============================================
 
