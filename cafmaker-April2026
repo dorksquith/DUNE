@@ -1,3 +1,47 @@
+# Summary for Alex chat 14 April 2026
+
+Goal is to provide the process as part of the truth info so we can compare distributions / make sensitivity studies in terms of the different types of Geant processes.
+
+The Process for a particle describes the process that created it. 
+  * https://github.com/NuSoftHEP/nusimdata/blob/main/nusimdata/SimulationBase/MCParticle.h
+  * So, we ask the daughters of the Primary what their process is. If we ask a Primary for its process, it will be "Primary".
+  * As I understand it, the Process comes directly from Geant rather than from some enums provided by us in novasoft. For example "hFritiofCaptureAtRest" 
+  * https://github.com/Geant4/geant4/blob/master/source/global/management/src/G4PhysicsModelCatalog.cc
+
+In NOvA I do this like so:
+  art::Ptr<sim::Particle> hitParticle;
+  int numdaughters = hitParticle->NumberDaughters();
+  # use backtracker to get the daughter
+  for (int nd=0; nd<numdaughters; ++nd){
+    const sim::Particle* daughter = bt->TrackIDToParticle( hitParticle->Daughter(nd) );
+    std::cout<< " Daughter "<<nd<< " process: " << daughter->Process() <<std::endl;
+  }
+
+Step 1: does this info exist upstream and simply need adding to CAFMaker?
+  * No.
+  * The ndlar reco files don't have full info available for TruthParticles:
+  True particle info: 
+  track id=2371, 
+  pdg=2212, 
+  stored E=0.947202, 
+  time=nan, 
+  start_pos= (129.268, 72.5557, 836.764) , 
+  parent= -1, 
+  daughters.size()=0,                      # no daughters is a problem. I think this is JK's problem.
+  first_process=0,                         # process is not filled. I think this is my problem.
+  first_subprocess=0, 
+  end_process=0, 
+  end_subprocess=0
+
+Step 2: is the info available in the edepsim files?
+  * I have not yet managed to answer this.
+  * Failure : I tried running makeCAF on edepsim, got a seg violation. Hacking that away stopped the truth getting filled so I can't print my TP info.
+  * Failure : can't run usual tools like eventdump.fcl because the edepsim files are root files, but apparently not art files
+
+
+
+=============================================
+
 # laptop 
 export KRB5CCNAME=FILE:/tmp/krb5cc_`id -u`
 kinit lasquith@FNAL.GOV
@@ -48,8 +92,26 @@ True particle info: track id=2371, pdg=2212, stored E=0.947202, time=nan, start_
 
 # try on edepsim file with cout in FillTruth TruthMatcher::FillInteraction
 # note that excluding the -n flag defaults to n=0 rather than -1...
+# okay FillInteraction never gets called thanks to my hack (it is done as part of the reco fill)
 
+# Try just looking in an edepsim root file:
+setup dunesw "v10_17_01d00" -q "e26:prof"
+lar -c eventdump.fcl MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root
 
+# unfortunately this is not an art file.
 
+count_events MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root
 
+# MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root	Not a valid art ROOT-format file: skipped.
+
+config_dumper -P MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root
+
+# Unable to find the metadata tree in file 'MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root'; this may not be an ART event data file.
+# Unable to to read parameter sets.
+
+lar -c eventdump.fcl MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root
+
+# ---- FileReadError BEGIN
+#  RootInputTree for branch type Event could not be initialized correctly from input file.
+# ---- FileReadError END
 
