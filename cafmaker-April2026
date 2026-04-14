@@ -50,7 +50,8 @@ path=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroPro
  * The best files to use for checking what is available in edepsim are in <path>/run-convert2h5/
 
 =============================================
-
+# SETUP
+=============================================
 # laptop 
 export KRB5CCNAME=FILE:/tmp/krb5cc_`id -u`
 kinit lasquith@FNAL.GOV
@@ -67,6 +68,10 @@ cd /exp/dune/app/users/${USER}
 alias list='ls -hltr'
 alias e='emacs -nw'
 
+=============================================
+# ND_CAFMaker
+=============================================
+
 # 1. first time
 mkdir cafmaker; cd cafmaker
 git clone https://github.com/DUNE/ND_CAFMaker.git
@@ -80,13 +85,17 @@ cd cafmaker/ND_CAFMaker
 source ndcaf_setup.sh
 make
 
+==========================================================================================
+# makeCAF tests
+# note that I should be leaving the eg genie, edepsim, reco files all specified in the fcl. 
+==========================================================================================
+
 # run on default fcl: success ( reports an error wanting dict for geoEffThrowResults, but continues )
 bin/makeCAF -n 2 --fcl=cfg/ndcafmakerjob.fcl  |tee cafmaker_test_default_output.log
 
 # run on edepsim input file: failure ( seg violation )
 bin/makeCAF -n 2 --fcl=cfg/ndcafmakerjobedepsim.fcl  |tee cafmaker_test_edepsim_output.log
 # works with hack to skip fillerTrigPair.first->FillRecoBranches if no groupedTriggers
-
 
 # run on ndlar reco input file: failure ( ERROR: Failed to parse JSON data )
 # ran again by accident and got success...
@@ -103,6 +112,9 @@ True particle info: track id=2371, pdg=2212, stored E=0.947202, time=nan, start_
 # note that excluding the -n flag defaults to n=0 rather than -1...
 # okay FillInteraction never gets called thanks to my hack (it is done as part of the reco fill)
 
+==========================================================================================
+# Discovering that the edep sim root files are not art files
+==========================================================================================
 # Try just looking in an edepsim root file:
 setup dunesw "v10_17_01d00" -q "e26:prof"
 lar -c eventdump.fcl MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPILLS.root
@@ -123,4 +135,28 @@ lar -c eventdump.fcl MicroProdN4p1_NDComplex_FHC.spill.full.0002460.EDEPSIM_SPIL
 # ---- FileReadError BEGIN
 #  RootInputTree for branch type Event could not be initialized correctly from input file.
 # ---- FileReadError END
+
+==========================================================================================
+# NDProduction validation 
+# note - run setup in ND_CAFMaker first to get setups
+==========================================================================================
+pwd
+/exp/dune/app/users/lasquith/cafmaker
+
+git clone https://github.com/DUNE/ND_Production.git
+cd ND_Production
+export fname=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/run-convert2h5/MicroProdN4p1_NDComplex_FHC.convert2h5.full/EDEPSIM_H5/0002000/0002500/MicroProdN4p1_NDComplex_FHC.convert2h5.full.0002500.EDEPSIM.hdf5
+
+python run-validation/edepsim_validation.py -f $fname -d 'full'
+
+# Keys in file: ['mc_hdr', 'mc_stack', 'segments', 'trajectories', 'vertices']
+
+# a few mpl moans about calling legend when no handles exist.
+# pretty slow (~5 mins), processing eg 923158 trajectoris...
+
+python h5-dump.py
+
+
+
+
 
