@@ -1,1 +1,51 @@
+# laptop 
+export KRB5CCNAME=FILE:/tmp/krb5cc_`id -u`
+kinit lasquith@FNAL.GOV
+# enter password
+dune6
+
+# gpvm
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+# container
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+cd /exp/dune/app/users/${USER}
+
+# can't live without
+alias list='ls -hltr'
+alias e='emacs -nw'
+
+# for later
+#mkdir cafmaker; cd cafmaker
+#git clone https://github.com/DUNE/ND_CAFMaker.git
+#cd ND_CAFMaker
+
+# nick setups from cafmaker
+cd cafmaker/ND_CAFMaker
+./build_deps.sh
+
+# ND_Production has validation scripts to plagiaris
+#git clone https://github.com/DUNE/ND_Production.git
+
+cd ../ND_Production
+
+# a few test files
+export fname=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/run-convert2h5/MicroProdN4p1_NDComplex_FHC.convert2h5.full/EDEPSIM_H5/0002000/0002500/MicroProdN4p1_NDComplex_FHC.convert2h5.full.0002500.EDEPSIM.hdf5
+export fname2=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/run-convert2h5/MicroProdN4p1_NDComplex_FHC.convert2h5.full/EDEPSIM_H5/0002000/0002400/MicroProdN4p1_NDComplex_FHC.convert2h5.full.0002465.EDEPSIM.hdf5
+export fname3=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/run-convert2h5/MicroProdN4p1_NDComplex_FHC.convert2h5.full/EDEPSIM_H5/0002000/0002400/MicroProdN4p1_NDComplex_FHC.convert2h5.full.0002471.EDEPSIM.hdf5 
+export fname4=/pnfs/dune/persistent/physicsgroups/dunendsim/abooth/nd-production/MicroProdN4p1/run-convert2h5/MicroProdN4p1_NDComplex_FHC.convert2h5.full/EDEPSIM_H5/0002000/0002400/MicroProdN4p1_NDComplex_FHC.convert2h5.full.0002490.EDEPSIM.hdf5 
+
+# make python work
+setup python v3_8_3b
+python -m venv .venv_v3_8_3b
+source .venv_v3_8_3b/bin/activate
+pip install --upgrade pip
+pip install matplotlib
+pip install h5py
+pip install seaborn
+pip install particle
+
+# run
+python run-validation/edepsim_validation.py -f $fname -d 'full'
+
 
