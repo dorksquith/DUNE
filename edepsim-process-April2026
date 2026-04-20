@@ -46,6 +46,6 @@ pip install seaborn
 pip install particle
 
 # run
-python run-validation/edepsim_validation.py -f $fname -d 'full'
+python run-validation/edepsim_g4proc_validation.py -f $fname -d 'full'
 
 
