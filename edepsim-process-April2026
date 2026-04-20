@@ -88,8 +88,9 @@ git config --list --show-origin
 file:/nashome/l/lasquith/.gitconfig
 ...
 
- export SSH_ASKPASS=''
+export SSH_ASKPASS=''
 
+# giving up for now. Asked in newbie slack channel.
 
 
 
