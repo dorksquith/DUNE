@@ -48,4 +48,50 @@ pip install particle
 # run
 python run-validation/edepsim_g4proc_validation.py -f $fname -d 'full'
 
+# bloody git
+# dune
+# had to remove everything from ~/.ssh/config
+ssh-keygen -t ed25519 -C "l.asquith@sussex.ac.uk"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+# past key into https://github.com/settings/keys [New ssh key]
+
+# test
+ssh -T git@github.com
+Enter passphrase for key '/nashome/l/lasquith/.ssh/id_ed25519':
+Hi dorksquith! You've successfully authenticated, but GitHub does not provide shell access.
+
+# still can't push
+Apptainer> git push --set-upstream origin feature/lasquith/process_validation
+fatal: cannot exec '/usr/libexec/openssh/gnome-ssh-askpass': No such file or directory
+
+
+cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+
+cat ~/.ssh/id_rsa.pub
+# past key into https://github.com/settings/keys [New ssh key]
+
+Apptainer> ssh -T git@github.com
+Hi dorksquith! You've successfully authenticated, but GitHub does not provide shell access.
+
+printenv |grep ssh
+SSH_AUTH_SOCK=/tmp/ssh-XXXXZSFtGE/agent.3000112
+SSH_ASKPASS=/usr/libexec/openssh/gnome-ssh-askpass
+CVS_RSH=ssh
+
+# SSH_ASKPASS wtf?
+
+git config --list --show-origin
+file:/nashome/l/lasquith/.gitconfig
+...
+
+ export SSH_ASKPASS=''
+
+
+
+
+
+
+
 
