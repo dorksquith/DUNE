@@ -21,10 +21,12 @@ alias e='emacs -nw'
 #mkdir cafmaker; cd cafmaker
 #git clone https://github.com/DUNE/ND_CAFMaker.git
 #cd ND_CAFMaker
+# ./build_deps.sh
 
 # nick setups from cafmaker
 cd cafmaker/ND_CAFMaker
-./build_deps.sh
+source ndcaf_setup.sh 
+
 
 # ND_Production has validation scripts to plagiaris
 #git clone https://github.com/DUNE/ND_Production.git
@@ -91,6 +93,8 @@ file:/nashome/l/lasquith/.gitconfig
 export SSH_ASKPASS=''
 
 # giving up for now. Asked in newbie slack channel.
+# tried all the bits and bobs here
+https://www.geeksforgeeks.org/git/how-to-authenticate-git-push-with-github-using-a-token/
 
 
 
