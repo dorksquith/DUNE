@@ -1,0 +1,86 @@
+# Adding truth process to cafs
+
+The Geant process (G4ProcessType) and subprocess (G4*ProcessSubType) together describe the creation process for a particle. 
+The same particle species, eg a proton, will behave differently in the detector if it eg undergoes elastic scattering or loses all its energy without interacting.
+We want to look at the end process of the primary particle, or at the start process of the daughter of the primary particle.
+
+Currently there is no way to get the daughters of a primary. Jeffrey is working on this.
+
+A particle is primary if its parend id is -1.
+
+Standard Record:
+https://github.com/DUNE/duneanaobj/blob/main/duneanaobj/StandardRecord/SRTrueParticle.h
+pdg
+G4ID
+interaction_id
+time
+ancestor_id
+p
+start_pos
+end_pos
+parent
+daughters
+first_process
+first_subprocess
+end_process
+end_subprocess
+#---
+
+CAFMaker:
+Truth is filled in:
+https://github.com/DUNE/ND_CAFMaker/blob/main/src/truth/FillTruth.cxx
+
+TruthMatcher::FillInteraction
+* Relies on Genie information
+* Make a caf::SRTrueParticle part
+* Ask genie if it is final state, and if it is not se the part.G4ID to -1
+* If genie says this is final state, get the G4 trajectory and trajectory points
+
+TruthMatcher::FillParticle
+* Does not rely on Genie information
+* gets the G4 trajectory
+auto traj = g4event->Trajectories[G4ID]; // 
+// the parent
+int ancestor_id = traj.ParentId;
+// the grandparent
+int ancestor_parent_id = g4event->Trajectories[ancestor_id].ParentId;
+
+Then there is some code that was not written to be understood. Then,
+
+caf::SRTrueParticle & part = collection.at(part_index);
+
+part.G4ID = traj.TrackId;
+part.interaction_id = ixn.id;
+part.pdg = traj.PDGCode;
+part.p = traj.InitialMomentum*0.001;
+part.parent = traj.ParentId;
+part.ancestor_id.ixn = nixn;
+part.ancestor_id.part = ancestor_id ;
+auto p0 = traj.Points[0];
+part.start_pos = (p0.Position * .1).Vect();
+auto pf = traj.Points[traj.Points.size()-1];
+part.end_pos = (pf.Position * .1).Vect();
+return ancestor_id;
+
+The things being taken from the Trajectory: # https://github.com/DUNE/edep-sim/blob/master/src/EDepSimTrajectory.hh
+TrackId
+PDGCode
+InitialMomentum
+ParentId
+Points[0]
+
+From the TrajectoryPoint: # https://github.com/DUNE/edep-sim/blob/master/src/EDepSimTrajectoryPoint.hh
+Position
+
+
+
+
+
+
+References:
+
+https://github.com/DUNE/edep-sim/blob/master/src/EDepSimPersistencyManager.cc
+GetProcessType returns a number according to the enums in 
+https://geant4.kek.jp/Reference/11.1.1/G4ProcessType_8hh_source.html
+GetProcessName returns a string
+https://apc.u-paris.fr/~franco/g4doxy/html/G4VProcess_8cc-source.html
